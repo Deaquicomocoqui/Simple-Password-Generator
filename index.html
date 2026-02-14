@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Generator Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 30px;
+        }
+        
+        .password-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            position: relative;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #generatedPassword {
+            color: white;
+            font-size: 1.5em;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            word-break: break-all;
+            text-align: center;
+        }
+        
+        .placeholder {
+            color: rgba(255,255,255,0.6);
+            font-style: italic;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            display: none;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .copy-btn.show {
+            display: block;
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 5px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #764ba2;
+            transform: scale(1.2);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .value-display {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .stats {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .stats.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .stats h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .stat-label {
+            color: #718096;
+            font-size: 0.85em;
+            margin-bottom: 3px;
+        }
+        
+        .stat-value {
+            color: #2d3748;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            animation: slideInRight 0.3s;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .notification.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Password Generator</h1>
+        <p class="subtitle">Create strong, secure passwords instantly</p>
+        
+        <div class="password-display">
+            <div id="generatedPassword" class="placeholder">Click Generate to create a password</div>
+            <button class="copy-btn" id="copyBtn" onclick="copyPassword()">📋 Copy</button>
+        </div>
+        
+        <div class="control-group">
+            <label for="length">Password Length: <span id="lengthValue">16</span></label>
+            <div class="slider-container">
+                <input type="range" id="length" min="8" max="64" value="16" oninput="updateValue('length')">
+                <div class="value-display" id="lengthDisplay">16</div>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label for="minLowercase">Minimum Lowercase (a-z): <span id="minLowercaseValue">1</span></label>
+            <div class="slider-container">
+                <input type="range" id="minLowercase" min="0" max="20" value="1" oninput="updateValue('minLowercase')">
+                <div class="value-display" id="minLowercaseDisplay">1</div>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label for="minUppercase">Minimum Uppercase (A-Z): <span id="minUppercaseValue">1</span></label>
+            <div class="slider-container">
+                <input type="range" id="minUppercase" min="0" max="20" value="1" oninput="updateValue('minUppercase')">
+                <div class="value-display" id="minUppercaseDisplay">1</div>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label for="minDigits">Minimum Digits (0-9): <span id="minDigitsValue">1</span></label>
+            <div class="slider-container">
+                <input type="range" id="minDigits" min="0" max="20" value="1" oninput="updateValue('minDigits')">
+                <div class="value-display" id="minDigitsDisplay">1</div>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label for="minSpecial">Minimum Special (!@#$...): <span id="minSpecialValue">1</span></label>
+            <div class="slider-container">
+                <input type="range" id="minSpecial" min="0" max="20" value="1" oninput="updateValue('minSpecial')">
+                <div class="value-display" id="minSpecialDisplay">1</div>
+            </div>
+        </div>
+        
+        <button class="generate-btn" onclick="generatePassword()">⚡ Generate Password</button>
+        
+        <div class="stats" id="stats">
+            <h3>📊 Password Composition</h3>
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Total Length</div>
+                    <div class="stat-value" id="statLength">-</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Lowercase</div>
+                    <div class="stat-value" id="statLowercase">-</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Uppercase</div>
+                    <div class="stat-value" id="statUppercase">-</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Digits</div>
+                    <div class="stat-value" id="statDigits">-</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Special Chars</div>
+                    <div class="stat-value" id="statSpecial">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        ✅ Password copied to clipboard!
+    </div>
+    
+    <script>
+        function updateValue(id) {
+            const element = document.getElementById(id);
+            const value = element.value;
+            document.getElementById(id + 'Display').textContent = value;
+            document.getElementById(id + 'Value').textContent = value;
+        }
+        
+        async function generatePassword() {
+            const length = parseInt(document.getElementById('length').value);
+            const minLowercase = parseInt(document.getElementById('minLowercase').value);
+            const minUppercase = parseInt(document.getElementById('minUppercase').value);
+            const minDigits = parseInt(document.getElementById('minDigits').value);
+            const minSpecial = parseInt(document.getElementById('minSpecial').value);
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        length: length,
+                        min_lowercase: minLowercase,
+                        min_uppercase: minUppercase,
+                        min_digits: minDigits,
+                        min_special: minSpecial
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const passwordDisplay = document.getElementById('generatedPassword');
+                    passwordDisplay.textContent = data.password;
+                    passwordDisplay.classList.remove('placeholder');
+                    
+                    document.getElementById('copyBtn').classList.add('show');
+                    
+                    // Update stats
+                    document.getElementById('statLength').textContent = data.stats.length;
+                    document.getElementById('statLowercase').textContent = data.stats.lowercase;
+                    document.getElementById('statUppercase').textContent = data.stats.uppercase;
+                    document.getElementById('statDigits').textContent = data.stats.digits;
+                    document.getElementById('statSpecial').textContent = data.stats.special;
+                    document.getElementById('stats').classList.add('show');
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error generating password: ' + error.message);
+            }
+        }
+        
+        function copyPassword() {
+            const password = document.getElementById('generatedPassword').textContent;
+            navigator.clipboard.writeText(password).then(() => {
+                const notification = document.getElementById('notification');
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 2000);
+            });
+        }
+        
+        // Generate initial password on load
+        window.onload = () => {
+            generatePassword();
+        };
+    </script>
+</body>
+</html>
